@@ -1,0 +1,201 @@
+class Champ
+    def initialize (name,hp,strength,defense,artfulness)
+        @name = name
+        @hp = hp
+        @strength = strength
+        @defense =defense
+        @artfulness = artfulness
+    end
+    def its_alive()
+        return @hp > 0
+    end
+    def death()
+        @hp = 0
+        puts @name,"Ha muerto"
+    end
+    def attack(e)
+        damage = damage(e)
+        e.hp = e.hp - damage
+        puts @name, "ha realizado", damage, "puntos de hp a" , e.name
+        
+        if e.its_alive
+            puts "hp restante de", e.name,"es:", e.hp
+        if
+            e.death
+        end
+    end
+end
+class Hero < Champ
+    def initialize(name, hp, strength, defense, artfulness, sword)
+        @name = "Heroe"
+        @sword = sword
+        @weapon = "Espada Basica"
+        @turns = 0
+    super(name, hp, strength, defense, artfulness)
+    end
+
+    def heal(amount,enemy,number)
+        amount = rand(10..30)
+        @hp += amount
+        number = rand(1..10)
+        if number >=1 and number <5
+            enemy.attack(self)
+        
+        else 
+            puts "has esquivado el ataque"
+            puts "Te has curado " + amount.to_s + " puntos de vida"
+            puts "Tienes: " + @hp.to_s + " puntos de vida"
+
+        end
+    end
+
+    def change_weapon(weapon)
+         @weapon = weapon
+    end
+
+    def damage(e)
+        if  @weapon == "Espada Basica"
+            return @artfulness - e.defense
+        
+        elsif @weapon == "Espada de fuego"
+            return @artfulness*3 - e.defense
+        
+        elsif @weapon == "Espada de hielo"
+            return @artfulness*2 - e.defense
+        end
+    end
+    def special_attack(e)
+        puts "A costa de un poco de tus puntos de vida, canalizas tu fuerza en dos puntos"
+        damage = damage(e)*2
+        @hp -= 8
+        e.hp = e.hp - damage
+        puts @name, "ha realizado",damage,"puntos de hp a", e.name
+        if e.its_alive 
+            puts "hp restante de", e.name,"es:",e.hp
+        else
+            e.death()
+        end
+    end
+end
+
+class Enemy < Champ
+    def initialize(name, hp, strength, defense, artfulness)
+        super(name, hp, strength, defense, artfulness)
+        @turns = 0
+    end
+
+    def damage(p)
+        return @artfulness + @strength - p.defense
+    end
+    
+    def name_enemy(enemy_name)
+        @name = enemy_name
+        enemy_name = "Rey Demonio"
+    end
+end
+
+puts "Introduce el nombre del personaje"
+name = gets.chomp
+p = Hero.new(name, 150, 10, 10, 50, 5)
+e = Enemy.new("Rey Demonio",rand(80..150),rand(30..60),rand(10..20),rand(10..30))
+
+def menu_stats(p,e)  
+    puts "Estadísticas del jugador"
+    puts "*****************"
+    puts "Tu eres el heroe #{p.name}"
+    puts "\n Hp:#{p.hp}"
+    puts "\nDaño:#{p.damage(e)}"
+    puts "\nFuerza:#{p.strength}"
+    puts "\nDefensa:#{p.defense}"
+    puts "Presione Enter para continuar."
+end
+def battle(hero, enemy)
+    hero.attack(enemy)
+    enemy.attack(hero)
+    if hero.hp <= 0
+        puts "Has sucumbido a las fuerzas del rey demonio, ahora el mundo sera governado por su raza creando una nueva raza para su reino."       
+    elsif enemy.hp <= 0
+        puts "Felicidades, has logrado oprimir a toda una raza a la fuerza, ahora los demonios seran tratados como esclavos gracias a ti :)."
+    elsif hero.hp <= 0 and enemy.hp <= 0 
+        puts "Al caer los 2 en combate, tanto los humanos como los demonios se vieron obligados a convivir entre si creando una era de paz."
+    end
+end
+
+def special_battle(hero, enemy)
+    hero.special_attack(enemy)
+    enemy.attack(hero)
+    if hero.hp <= 0
+        puts "Has sucumbido a las fuerzas del Rey Demonio, ahora el mundo sera gobernado por su raza creando una nueva raza para su reino." 
+    elsif enemy.hp <= 0
+        puts "Felicidades, has logrado oprimir a toda una raza a la fuerza, ahora los demonios seran tratados como esclavos gracias a ti :)."
+    elsif hero.hp <= 0 and enemy.hp <=0
+        puts "Al caer los 2 en combate, tanto los humanos como los demonios se vieron obligados a convivir entre si creando una era de paz."
+    end
+end
+
+def menu_weapon(p)
+    option = gets.chomp.to_i
+    while option != 1 and option != 2
+        puts "**Elige una espada**"
+        puts "1) Espada de fuego: Daño+ Defensa++ |2)Espada de hielo: Daño+++ hp-\n"
+        if option == 1 
+            change_weapon("Espada de fuego")
+            @defense += 10
+        elsif option == 2
+            change_weapon("Espada de hielo")
+            @hp -= 5
+        puts "se han cambiado tus datos\n Arma: Espada de hielo, HP: -5"
+        else
+            puts "Opción no valida, ingresa un numero entre 1 y 2."
+    end
+end
+end
+
+def menu_battle(p,e)
+    choice = gets.chomp.to_i
+    while p.hp > 0 and e.hp > 0
+        
+        if choice == "1"
+        battle(hero,enemy)
+        elsif choice == "2"
+            p.heal(1,e,0)
+        elsif choice == "3"
+            special_attack(p,e)
+        end    
+        puts("*****************")
+        puts("1) Atacar")
+        puts("2) Curarse")
+        puts("3) Ataque especial")
+        puts("*****************")
+       puts "Seleccione una opción:"
+        end
+    end
+end
+
+def menu(p,e)
+    while true
+        puts "1) Ver estadisticas del jugador"
+        puts "2) Cambiar arma"
+        puts "3) Iniciar batalla"
+        puts "4) Salir"
+        option = gets.chomp.to_i
+        if option == 1
+        menu_stats(p,e)
+        
+        elsif option == 2
+        menu_weapon(p)
+    
+        elsif option == 3
+        menu_battle(p, e)
+    
+        elsif option == 4
+        puts "Hasta luego!"
+        break
+        else
+        puts "Opcion no valida, ingresa un numero entre 1 y 4."
+        break
+puts "*********Bienvenido a este mundo Isekai,donde cuenta la profecia de que eres el Heroe que matara al Rey Demonio*********"
+end
+end
+end
+menu(p,e)
